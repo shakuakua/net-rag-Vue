@@ -1,6 +1,6 @@
 // stores/chatStore.ts
 import { defineStore } from 'pinia';
-import axios from 'axios'; 
+import axios from 'axios';
 
 // 定义消息类型接口（规范数据格式）
 export interface Message {
@@ -81,7 +81,7 @@ export const useChatStore = defineStore('chat', {
     async uploadFile(file: any) {
       // 1. 验证文件存在性
       if (!file || !file.file) return;
-      
+
       const fileData = file.file;
       this.isUploading = true;
 
@@ -94,7 +94,7 @@ export const useChatStore = defineStore('chat', {
         let uploadUrl = '/upload/pdf'; // PDF接口
         if (fileData.type.includes('word')) {
           uploadUrl = '/upload/docx';
-        } else if (fileData.type === 'text/markdown') {
+        } else if (fileData.type.includes('markdown') || fileData.name.endsWith('.md')) {
           uploadUrl = '/upload/md';
         }
 
