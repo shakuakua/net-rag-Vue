@@ -14,7 +14,7 @@
   <div class="button-group">
   <el-upload
         class="upload-btn"
-        :action="''"
+        :action="'/upload/pdf'"
         :http-request="chatStore.uploadFile"
         :disabled="chatStore.isGenerating || chatStore.isUploading"
         :limit="1"
@@ -78,16 +78,18 @@ const handleInput = (value: string) => {
 }
 
 /* 覆盖 Element Plus 输入框样式 */
-.el-textarea__inner {
+.input-textarea :deep(.el-textarea__inner) {
   border-radius: 12px !important;
-  resize: none;
+  resize: none !important;
   padding: 12px 16px !important;
+  height: auto !important;
+  min-height: 120px !important;
 }
 
 .send-btn {
   border-radius: 50% !important;
-  width: 48px;
-  height: 48px;
+  width: 65px;
+  height: 65px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -97,8 +99,8 @@ const handleInput = (value: string) => {
 .button-group {
   display: flex;
   gap: 8px;
-  align-items: flex-end;
-  height: fit-content;
+  align-items: center;
+  height: auto;
 }
 
 .upload-btn {
@@ -109,7 +111,7 @@ const handleInput = (value: string) => {
 
 .upload-icon-btn {
   border-radius: 10px !important;
-  height: 50px;
+  height: 65px;
   border: 1px solid var(--el-border-color);
   background-color: var(--el-fill-color-light);
   color: var(--el-text-color-primary);
