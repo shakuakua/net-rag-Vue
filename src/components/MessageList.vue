@@ -59,17 +59,7 @@ watch(
 
 // 组件挂载完成后，初始化滚动到底部（防止初始状态下内容被遮挡）
 onMounted(() => scrollToBottom());
-// const props=defineProps({
-//   messageList:{
-//     type:Array as PropType<Message[]>,
-//     default:()=>[],
-//     require:true
-//   },
-//   isGenerating:{
-//     type: String,
-//     default: ''
-//   }
-// })
+
 </script>
 
 <style scoped>
