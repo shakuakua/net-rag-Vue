@@ -18,7 +18,7 @@
         :http-request="chatStore.uploadFile"
         :disabled="chatStore.isGenerating || chatStore.isUploading"
         :limit="1"
-        accept=".pdf"
+        accept=".pdf,.docx,.doc,.md"
         >
         <el-button
           icon="Upload"

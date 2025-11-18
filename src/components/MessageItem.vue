@@ -8,23 +8,49 @@
     <div class="message-content-container">
       <div class="message-header">
         <span class="sender-name">{{ msg.isUser ? '我' : 'AI助手' }}</span>
-        <span class="send-time">{{ msg.timestamp}}</span>
+        <span class="send-time">{{ formatTime(msg.timestamp)}}</span>
       </div>
 
       <!-- 消息气泡 -->
-      <div class="message-bubble">{{ msg.content }}</div>
+      <div class="message-bubble">
+        <!-- 文本消息 -->
+        <template v-if="msg.type === 'text'">
+          {{ msg.content }}
+        </template>
+
+        <!-- 文件消息 -->
+        <template v-if="msg.type === 'file'">
+          <div class="file-info">
+            <el-icon class="file-icon"><Document /></el-icon>
+            <div class="file-details">
+              <div class="file-name">{{ msg.content }}</div> <!-- 显示文件名描述 -->
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {type Message} from '@/store/chatStore'
+import {type Message} from '@/store/chatStore';
+import { Document } from '@element-plus/icons-vue';
 
 const userAvatar = "/assets/Image_1730023624360.png"
 const aiAvatar = "/assets/4B0BC159E9D9A9B86B8B20E67D4EFD10.jpg"
 defineProps<{
   msg: Message;
-}>()
+}>();
+
+// 格式化时间戳为可读时间
+const formatTime = (timestamp: number) => {
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString('zh-CN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+};
 
 </script>
 
@@ -117,5 +143,31 @@ defineProps<{
   border: 1px solid #eee;
   border-top-left-radius: 4px; /* 贴合头像的圆角优化 */
 }
+
+/* 文件消息样式 */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.file-icon {
+  color: #409eff;
+  font-size: 18px;
+}
+
+.file-details {
+  flex: 1;
+  overflow: hidden;
+}
+
+.file-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+
 </style>
 
