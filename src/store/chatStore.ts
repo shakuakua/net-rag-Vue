@@ -1,5 +1,6 @@
 // stores/chatStore.ts
 import { defineStore } from 'pinia';
+import axios from 'axios'; 
 
 // 定义消息类型接口（规范数据格式）
 export interface Message {
@@ -8,6 +9,11 @@ export interface Message {
   isUser: boolean; // 是否是用户发送的消息（true=用户，false=AI）
   timestamp: number;
   type:'text'|'file';
+  fileInfo?: {  // 新增文件信息字段
+    name: string;
+    url: string;
+    size: number;
+  };
 }
 
 // 创建 Pinia 仓库（参数1：仓库唯一标识，参数2：仓库配置）
@@ -71,8 +77,84 @@ export const useChatStore = defineStore('chat', {
       }
     },
 
-    async uploadFile(){
+    // 上传文件并处理
+    async uploadFile(file: any) {
+      // 1. 验证文件存在性
+      if (!file || !file.file) return;
+      
+      const fileData = file.file;
+      this.isUploading = true;
 
+      try {
+        // 2. 创建 FormData 并添加文件
+        const formData = new FormData();
+        formData.append('file', fileData);
+
+        // 3. 发送文件到后端（根据文件类型选择接口）
+        let uploadUrl = '/upload/pdf'; // PDF接口
+        if (fileData.type.includes('word')) {
+          uploadUrl = '/upload/docx';
+        } else if (fileData.type === 'text/markdown') {
+          uploadUrl = '/upload/md';
+        }
+
+        // 4. 调用后端接口
+        const response = await axios.post(uploadUrl, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          onUploadProgress: (progressEvent) => {
+            // 处理上传进度
+            const percent = (progressEvent.loaded / (progressEvent.total || 1)) * 100;
+            console.log(`上传进度: ${percent.toFixed(2)}%`);
+          }
+        });
+
+        // 5. 上传成功后添加文件消息到列表
+        this.messageList.push({
+          id: Date.now().toString(),
+          content: `已上传文件: ${fileData.name}`,
+          isUser: true,
+          timestamp: Date.now(),
+          type: 'file',
+          fileInfo: {
+            name: fileData.name,
+            url: response.data.url || '', // 后端返回的文件URL
+            size: fileData.size
+          }
+        });
+
+        // 6. 模拟AI对文件的回复
+        this.isGenerating = true;
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        this.messageList.push({
+          id: (Date.now() + 1).toString(),
+          content: `已收到文件《${fileData.name}》，正在处理中...`,
+          isUser: false,
+          timestamp: Date.now(),
+          type: 'text'
+        });
+
+      } catch (error) {
+        console.error('文件上传失败:', error);
+        let errorMsg = '文件上传失败';
+        if (axios.isAxiosError(error)) {
+          // 显示后端返回的错误信息
+          if (error.response?.data?.message) {
+            errorMsg += `: ${error.response.data.message}`;
+          } else {
+            errorMsg += `: ${error.message} (状态码: ${error.response?.status})`;
+          }
+        }
+        this.messageList.push({
+          id: (Date.now() + 2).toString(),
+          content: errorMsg,
+          isUser: false,
+          timestamp: Date.now(),
+          type: 'text'
+        });
+      } finally {
+        this.isUploading = false;
+        this.isGenerating = false;
+      }
     },
 
     // （可选）清空聊天记录（如需扩展功能可启用）
