@@ -25,6 +25,11 @@ export default defineConfig({
         target:'http://localhost:3001',
         changeOrigin:true,
         secure:false
+      },
+      '/rag': {
+        target:'http://localhost:3001',
+        changeOrigin: true,
+        secure: false,
       }
     }
   }
