@@ -24,11 +24,26 @@ export const useChatStore = defineStore('chat', {
     messageList: [] as Message[], // 聊天消息列表（共享状态，消息列表组件和 App 组件用到）
     isGenerating: false, // AI 回复生成中状态（控制输入框禁用、按钮状态）
     showSidebar: false,
-    isUploading:false
+    isUploading: false,
+    // 新增：模型配置相关状态
+    llmSettings: {
+      baseURL: '',
+      apiKey: '',
+      model: ''
+    },
+    embeddingSettings: {
+      baseURL: '',
+      apiKey: '',
+      model: ''
+    },
+    rerankerSettings: {
+      apiKey: ''
+    }
   }),
 
   // actions：定义修改状态的方法（类似组件的 methods，支持异步）
-  actions: {     // 发送消息（核心方法：用户发送消息 + AI 模拟回复）
+  actions: {
+    // 发送消息（核心方法：用户发送消息 + AI 回复）
     async sendMessage() {
       // 1. 过滤空消息
       const content = this.inputValue.trim();
@@ -50,19 +65,20 @@ export const useChatStore = defineStore('chat', {
       this.isGenerating = true;
 
       try {
-        // 5. 模拟 AI 回复（实际项目中替换为接口请求，如调用 ChatGPT API）
-        await new Promise(resolve => setTimeout(resolve, 1500)); // 模拟 1.5 秒接口延迟
+        // 5. 调用后端 RAG 接口获取 AI 回复
+        const response = await axios.post('/rag/retrieve', {
+          text: content 
+        });
 
         // 6. 添加 AI 回复到列表
         this.messageList.push({
           id: (Date.now() + 1).toString(),
-          content: `已收到你的消息："${content}"（这是 AI 模拟回复）`,
+          content: response.data.response,
           isUser: false,
           timestamp: Date.now(),
           type: 'text'
         });
       } catch (error) {
-        // 错误处理（实际项目中可添加错误提示）
         console.error('AI 回复失败：', error);
         this.messageList.push({
           id: (Date.now() + 2).toString(),
@@ -98,7 +114,7 @@ export const useChatStore = defineStore('chat', {
           uploadUrl = '/upload/md';
         }
 
-        // 4. 调用后端接口
+        // 4. 调用后端接口上传文件
         const response = await axios.post(uploadUrl, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
           onUploadProgress: (progressEvent) => {
@@ -122,20 +138,29 @@ export const useChatStore = defineStore('chat', {
           }
         });
 
-        // 6. 模拟AI对文件的回复
+        // 6. 上传成功后调用文件处理接口
         this.isGenerating = true;
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await axios.post('/ingest/process', {
+          fileUrl: response.data.url,
+          fileName: fileData.name
+        });
+
+        // 7. 处理完成后调用 RAG 接口生成解析结果
+        const ragResponse = await axios.post('/rag/retrieve', {
+          text: `请解析文件《${fileData.name}》并总结内容`
+        });
+
         this.messageList.push({
           id: (Date.now() + 1).toString(),
-          content: `已收到文件《${fileData.name}》，正在处理中...`,
+          content: ragResponse.data.response, 
           isUser: false,
           timestamp: Date.now(),
           type: 'text'
         });
 
       } catch (error) {
-        console.error('文件上传失败:', error);
-        let errorMsg = '文件上传失败';
+        console.error('文件处理失败:', error);
+        let errorMsg = '文件处理失败';
         if (axios.isAxiosError(error)) {
           // 显示后端返回的错误信息
           if (error.response?.data?.message) {
