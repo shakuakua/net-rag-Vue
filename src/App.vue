@@ -5,6 +5,11 @@
       <img src="/assets/Image_1730023624360.png" alt="logo"></img>
       <h1 >计网智能问答助手</h1>
     </div>
+
+    <!-- 添加模型配置按钮 -->
+     <el-button type="primary" @click="showModelConfigDialog = true">
+      模型配置
+     </el-button>
   </header>
 
   <main class="app-main">
@@ -16,20 +21,7 @@
         <div class="sidebar-header">
           <h2>历史对话</h2>
         </div>
-        <div class="history-list">
-          <div class="history-item active">
-            <el-icon class="history-icon"><Search /></el-icon>
-            <span>当前对话</span>
-          </div>
-          <div class="history-item">
-            <el-icon class="history-icon"><Search /></el-icon>
-            <span>历史对话1</span>
-          </div>
-          <div class="history-item">
-            <el-icon class="history-icon"><Search /></el-icon>
-            <span>历史对话2</span>
-          </div>
-        </div>
+
       </aside>
 
       <!-- 对话页面 -->
@@ -38,6 +30,10 @@
 
         <!-- 输入框 -->
         <InputBox />
+        <!-- 模型配置对话框 -->
+        <ModelConfigDialog
+      v-model:visible="showModelConfigDialog"
+    />
       </section>
   </main>
 </div>
@@ -48,9 +44,11 @@
 import MessageList from './components/MessageList.vue';
 import InputBox from './components/InputBox.vue';
 import { useChatStore } from '@/store/chatStore';
-
+import { ref } from 'vue'
+import ModelConfigDialog from './components/ModelConfigDialog.vue';
 
 const chatStore = useChatStore()
+const showModelConfigDialog = ref(false)
 
 </script>
 
