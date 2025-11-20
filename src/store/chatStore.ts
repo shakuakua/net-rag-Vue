@@ -49,7 +49,7 @@ export const useChatStore = defineStore('chat', {
 
   // actions：定义修改状态的方法（类似组件的 methods，支持异步）
   actions: {     // 发送消息（核心方法：用户发送消息 + AI 模拟回复）
-    async sendMessage() {
+     async sendMessage() {
       // 1. 过滤空消息
       const content = this.inputValue.trim();
       if (!content) return;
@@ -70,19 +70,20 @@ export const useChatStore = defineStore('chat', {
       this.isGenerating = true;
 
       try {
-        // 5. 模拟 AI 回复（实际项目中替换为接口请求，如调用 ChatGPT API）
-        await new Promise(resolve => setTimeout(resolve, 1500)); // 模拟 1.5 秒接口延迟
+        // 5. 调用后端 RAG 接口获取 AI 回复
+        const response = await axios.post('/rag/retrieve', {
+          text: content
+        });
 
         // 6. 添加 AI 回复到列表
         this.messageList.push({
           id: (Date.now() + 1).toString(),
-          content: `已收到你的消息："${content}"（这是 AI 模拟回复）`,
+          content: response.data.response,
           isUser: false,
           timestamp: Date.now(),
           type: 'text'
         });
       } catch (error) {
-        // 错误处理（实际项目中可添加错误提示）
         console.error('AI 回复失败：', error);
         this.messageList.push({
           id: (Date.now() + 2).toString(),
