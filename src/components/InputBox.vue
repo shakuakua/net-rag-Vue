@@ -74,7 +74,6 @@ const handleIngest = async () => {
   try {
 
     console.log('开始解析文件...',lastUploadedFile);
-    console.log('开始解析文件路径...',lastUploadedFile.value.url);
     await chatStore.ingestFile(lastUploadedFile.value.url);
   } catch (error) {
     console.error('解析文件出错:', error);
@@ -106,7 +105,7 @@ const handleInput = (value: string) => {
   resize: none !important;
   padding: 12px 16px !important;
   height: auto !important;
-  min-height: 120px !important;
+  min-height: 160px !important;
 }
 
 .send-btn {
