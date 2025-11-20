@@ -54,7 +54,8 @@ const showModelConfigDialog = ref(false)
 
 <style scoped>
 .app-container {
-  width: 1600px;
+  width: 80%;
+  /* max-width: 2400px; */
   margin: 0 auto;
   height: 100vh;
   display: flex;
