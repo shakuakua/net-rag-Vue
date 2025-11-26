@@ -211,7 +211,7 @@ export const useChatStore = defineStore('chat', {
         this.isGenerating = true;
         console.log('开始解析文件:', filePath);
         console.log("消息列表",this.messageList)
-        const response = await axios.post('/ingest/test',{ filePath },{
+        const response = await axios.post('/ingest/ingest',{ filePath },{
           headers:{
             'Content-Type': 'application/json'
           }
@@ -259,6 +259,17 @@ export const useChatStore = defineStore('chat', {
   } finally {
     this.isGenerating = false;
   }
+    },
+     // 重置向量存储数据库
+    async resetVectorStore() {
+      try {
+        const response = await axios.get('rag/resetVectorStore');
+        return response.data;
+      } catch (error) {
+        console.error('重置数据库失败:', error);
+        throw error;
+      }
     }
   }
+
 });

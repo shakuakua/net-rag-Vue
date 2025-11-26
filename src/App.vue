@@ -6,10 +6,17 @@
       <h1 >计网智能问答助手</h1>
     </div>
 
+    <div class="header-actions">
     <!-- 添加模型配置按钮 -->
      <el-button type="primary" @click="showModelConfigDialog = true">
       模型配置
      </el-button>
+
+     <!-- 重置数据库按钮 -->
+     <el-button type="danger" @click="handleResetVectorStore" :loading="isResetting">
+      重置数据库
+     </el-button>
+    </div>
   </header>
 
   <main class="app-main">
@@ -46,10 +53,23 @@ import InputBox from './components/InputBox.vue';
 import { useChatStore } from '@/store/chatStore';
 import { ref } from 'vue'
 import ModelConfigDialog from './components/ModelConfigDialog.vue';
+import { ElMessage } from 'element-plus';
+const isResetting = ref(false)
 
 const chatStore = useChatStore()
 const showModelConfigDialog = ref(false)
-
+// 处理重置向量存储
+const handleResetVectorStore = async () => {
+  try {
+    isResetting.value = true;
+    await chatStore.resetVectorStore();
+    ElMessage.success('数据库重置成功');
+  } catch (error) {
+    ElMessage.error('重置数据库失败: ' + (error as Error).message);
+  } finally {
+    isResetting.value = false;
+  }
+}
 </script>
 
 <style scoped>
@@ -68,6 +88,11 @@ const showModelConfigDialog = ref(false)
 
 
 /* 顶部导航 */
+/* 添加按钮容器样式 */
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
 .app-header {
   display: flex;
   align-items: center;
@@ -169,6 +194,7 @@ const showModelConfigDialog = ref(false)
   height: 100%;
   overflow: hidden;
 }
+
 
 
 </style>
