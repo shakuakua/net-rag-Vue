@@ -147,7 +147,7 @@ const embeddingRules = {
 }
 
 const rerankerRules = {
-  apiKey: [{ required: true, message: '请输入 API Key', trigger: 'blur' }]
+  apiKey: [{ required: true, message: '阿里云DashScope API密钥', trigger: 'blur' }]
 }
 
 // 关闭前的处理
