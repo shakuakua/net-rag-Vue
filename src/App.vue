@@ -2,7 +2,7 @@
   <div class="app-container">
   <header class="app-header">
     <div class="logo">
-      <img src="/assets/Image_1730023624360.png" alt="logo"></img>
+      <img src="/assets/robot.png" alt="logo"></img>
       <h1 >计网智能问答助手</h1>
     </div>
 

@@ -36,8 +36,8 @@
 import {type Message} from '@/store/chatStore';
 import { Document } from '@element-plus/icons-vue';
 
-const userAvatar = "/assets/Image_1730023624360.png"
-const aiAvatar = "/assets/4B0BC159E9D9A9B86B8B20E67D4EFD10.jpg"
+const userAvatar = "/assets/cat.png"
+const aiAvatar = "/assets/robot.png"
 defineProps<{
   msg: Message;
 }>();
